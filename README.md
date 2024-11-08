@@ -1,3 +1,6 @@
+# ITU: Security 1, BSc (Autumn 2024) 
+## Group 11 - Miniproject
+
 Sim: Penetration Testing Simulation Environments
 
 # server
@@ -13,5 +16,3 @@ Sim: Penetration Testing Simulation Environments
 # bonus
 
 - `nmap -sT -p- -Pn -v --open -sV --proxies socks4://127.0.0.1:1080 10.0.1.11` # NMAP A CONTAINER
-# pensim
-# pensim
