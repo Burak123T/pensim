@@ -1,0 +1,37 @@
+Developer: Hello guys!
+
+Beta tester: Hello!
+
+Freebooter: Hi.
+
+Developer: I'm ready to get started guys!
+
+Beta tester: Me too!
+
+Developer: Actually, I've already patched the insecurities. First I fixed the SQL injection stuff and then I hashed the passwords. I've also added file uploads and I'm working on some new ideas I have.
+
+Beta tester: Hashing?
+
+Developer: Yes! Hashing is great. This way we don't store passwords as plaintext. I used SHA256 hashing. It works like this: 
+
+Developer: *screenshot*
+
+Beta tester: Salt? 
+
+Developer: Yes, that's part of what's great with hashing: We add a salt, which means that even if we hash the same password twice, it'll look different in the database. 
+
+Developer: The salt is just a random value. For instance, mine is *___*
+
+Beta tester: Interesting! I want to test the new features, but I keep forgetting my password
+
+Devleloper: Hang on, I knew this would happen, so I wrote it down. I'll send it to you in a private message. 
+
+Devleloper: Remember, the new features are expirimental and I haven't had time to think too much about security :S. There's a reason only you can see them. 
+
+Developer: Just like there's certain stuff only the admin should know. 
+
+Freebooter: That's right, I was the admin the whole time, that was the plot twist. What a delightful dramaturgical curl!
+
+
+
+

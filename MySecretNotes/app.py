@@ -31,7 +31,7 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL,
         password TEXT NOT NULL, 
-        salt STRING NOT NULL
+        salt TEXT NOT NULL
     );
 
     CREATE TABLE files (
@@ -52,6 +52,21 @@ def init_db():
 def generate_password_hash(password, salt):
     hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
     return hashed_password
+
+def fetch_users():
+    conn = connect_db()
+    db = conn.cursor()
+    db.execute("SELECT * FROM users")
+    users = db.fetchall()
+    # Print the information for each user
+    for user in users:
+        print(f"User ID: {user[0]}")
+        print(f"Username: {user[1]}")
+        print(f"Password: {user[2]}")
+        print(f"Salt: {user[3]}")
+        print("-" * 20)  # Separator between users
+
+    conn.close()
 
 ### APPLICATION SETUP ###
 app = Flask(__name__)
@@ -84,6 +99,7 @@ def index():
 @app.route("/notes/", methods=('GET', 'POST'))
 @login_required
 def notes():
+    fetch_users() # delete
     importerror=""
     #Posting a new note:
     if request.method == 'POST':
@@ -221,24 +237,25 @@ def login():
         salt_statement = """SELECT salt FROM users WHERE username = ?"""
         c.execute(salt_statement, (username,))
         salt = c.fetchone()
+        print("THIS IS THE SALT")
+        print(salt)
         # It's in a tuple for some reason, get it out of there...
-        actual_salt = salt[0]
-        print("THIS IS THE SALT USED ON LOGIN")
-        print(actual_salt)
+        actual_salt_hex = salt[0]
+        print("THIS IS THE HEXED SALT USED ON LOGIN")
+        print(actual_salt_hex)
+        # We need to unhex it. 
+        actual_salt = bytes.fromhex(actual_salt_hex)
              
         
-        
-        # print("THIS IS THE ACTUAL HASH")
-        # print(actual_salt)
         # Using the salt, hash the password and see if it matches the stored hashed password
         hashed_password = generate_password_hash(password, actual_salt)
         print("THIS IS THE HASHED ENTERED PASSWORD ON LOGIN")
         print(hashed_password)
+        hashed_password_hex = hashed_password.hex()
         
         
         statement = """SELECT * FROM users WHERE username = ? AND password = ?"""        
-        c.execute(statement, (username, hashed_password))
-        print(hashed_password)
+        c.execute(statement, (username, hashed_password_hex))
         result = c.fetchall()
 
         if len(result) > 0:
@@ -279,17 +296,22 @@ def register():
             usererror = "That username is already in use by someone else!"
         else:
             salt = os.urandom(32)
+            salt_hex = salt.hex()
             hashed_password = generate_password_hash(password, salt)
+            hashed_password_hex = hashed_password.hex()
             statement = """INSERT INTO users(id, username, password, salt) 
                            VALUES(null, ?, ?, ?)""" 
-            print(statement)
-            
+
             print("THIS IS THE SALT USED ON REGISTRATION")
             print(salt)
+            print("THIS IS THE HEXED SALT ON REGISTRATION")
+            print(salt_hex)
              
-            c.execute(statement, (username,hashed_password,salt))
+            c.execute(statement, (username,hashed_password_hex,salt_hex))
             print("THIS IS THE HASHED PASSWORD ON REGISTRATION")
             print(hashed_password)
+            print("THIS IS THE HASHED AND HEXED PASSWORD ON REGISTRATION")
+            print(hashed_password_hex)
             db.commit()
             db.close()
             return f"""<html>
