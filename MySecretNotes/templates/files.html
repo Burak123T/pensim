@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Files</title>
+</head>
+<body>
+    <h1>Welcome to Your Files Page, {{ username }}!</h1>
+
+    <p>Here are your files:</p>
+
+    <ul>
+      {% if user_files %}
+          {% for file in user_files %}
+              <li>{{ file[2] }}</li>
+              <a href="{{ url_for('download_file', file_id=file[0]) }}">Download</a>
+          {% endfor %}
+      {% else %}
+          <li>No files available.</li>
+      {% endif %}
+   </ul>
+
+   <!-- File upload form -->
+   <h2>Upload a New File</h2>
+   <form method="POST" enctype="multipart/form-data">
+       <label for="file">Choose a file:</label>
+       <input type="file" name="file" id="file" required>
+       <br>
+       <button type="submit">Upload File</button>
+   </form>
+
+    <p><a href="/">Back</a></p>
+</body>
+</html>

@@ -1,0 +1,7 @@
+I've just implemented hashing, which led me to write down some of my thoughts on why hashing is sooooo great.
+And to save those thoughts in the file function in this messaging app which is definitely secure. 
+This hashing is great! This way, even if someone was to get access to the database (which is surely impossible, 
+since the first thing I did was protect the note taking app against SQL injections) they would only see the hashed passwords. 
+I'm so happy about this hashing, that I even hashed my own password twice. A hash of a hash! 
+
+That way I won't even have to think of an original password either.
