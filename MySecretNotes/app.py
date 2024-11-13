@@ -107,27 +107,24 @@ def notes():
                 importerror="No such note with that ID!"
             db.commit()
             db.close()
-            
-            
+
         elif request.form['submit_button'] == 'upload file':
-            noteid = request.form['noteid']
+            f = request.files['file'] 
+            f.save(f.filename)   
+            print("The name of the file I have uploaded:", f.filename)
+            f.seek(0) # Apparently we have to reset pointer -_-
+            note = f.read().decode('utf-8') 
             db = connect_db()
             c = db.cursor()
-            statement = """SELECT * from NOTES where publicID = ?"""
-            c.execute(statement, (noteid,))
-            result = c.fetchall()
-            if(len(result)>0):
-                row = result[0]
-                
-                statement = """INSERT INTO notes(id, assocUser, dateWritten, note, publicID) 
-                               VALUES (NULL, ?, ?, ?, ?)"""
-                c.execute(statement, (session['userid'], row[2], row[3], row[4]))
-            else:
-                importerror="No such note with that ID!"
+
+            statement = """INSERT INTO notes(id,assocUser,dateWritten,note,publicID) VALUES(null,%s,'%s','%s',%s);""" %(session['userid'], time.strftime('%Y-%m-%d %H:%M:%S'), note, random.randrange(1000000000, 9999999999))
+            
+            print(statement)
+            c.execute(statement, ())
+
+            
             db.commit()
             db.close()
-            
-            
             
     
     db = connect_db()
