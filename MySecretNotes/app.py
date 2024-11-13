@@ -1,5 +1,6 @@
 import json, sqlite3, click, functools, os, hashlib,time, random, sys, hashlib
 import io
+import platform
 from flask import Flask, current_app, g, session, redirect, render_template, url_for, request, send_file
 
 
@@ -383,7 +384,7 @@ def download_file(file_id):
         db.close()
 
         # io.BytesIO converts the file data into a file object
-        return send_file(io.BytesIO(file_data),mimetype='application/octet-stream',as_attachment=True, attachment_filename=filename)
+        return send_file(io.BytesIO(file_data),mimetype='application/octet-stream',as_attachment=True, download_name=filename)
                         
     else:
         db.close()
