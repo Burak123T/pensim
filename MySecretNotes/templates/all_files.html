@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <ul>
+        {% for file in all_files %}
+            <li>
+                <strong>{{ file[1] }}</strong> 
+                <a href="{{ url_for('get_user_files', username=file[0]) }}">View File</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
