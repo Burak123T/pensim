@@ -8,8 +8,8 @@
     <ul>
         {% for file in all_files %}
             <li>
-                <strong>{{ file[1] }}</strong> 
-                <a href="{{ url_for('get_user_files', username=file[0]) }}">View File</a>
+                <strong>{{ file[1] }} - {{ file[2] }}</strong> 
+                <a href="{{ url_for('download_file', file_id=file[0]) }}">Download</a>
             </li>
         {% endfor %}
     </ul>
