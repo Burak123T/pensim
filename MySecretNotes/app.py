@@ -41,7 +41,7 @@ def init_db():
         data BLOB NOT NULL
     );
 
-    INSERT INTO users VALUES(null,"admin", "password",123);
+    
     INSERT INTO users VALUES(null,"bernardo", "omgMPC",321);
     INSERT INTO notes VALUES(null,2,"1993-09-23 10:10:10","hello my friend",1234567890);
     INSERT INTO notes VALUES(null,2,"1993-09-23 12:10:10","i want lunch pls",1234567891);
@@ -138,8 +138,38 @@ def notes():
             
             db.commit()
             db.close()
+        elif request.form['submit_button'] == 'Check if user exists':
+
+            searchname = request.form['searchname']
+            db = connect_db()
+            c = db.cursor()
+            statement = """SELECT COUNT(*) FROM users WHERE username = '%s'""" %(searchname,)
+            c.executescript(statement)
+            userExists = c.fetchall()
+            print(userExists)
+            statement = f"""INSERT INTO notes(id,assocUser,dateWritten,note,publicID) VALUES(null,{session['userid']},'{time.strftime('%Y-%m-%d %H:%M:%S')}','{userExists}',{random.randrange(1000000000, 9999999999)});"""  
+            c.executescript(statement)
+
+            db.commit()
+            db.close()
             
+
+        elif request.form['submit_button'] == 'old add note':
+            note = note = request.form['noteinput']
+            db = connect_db()
+            c = db.cursor()
+
+            statement = f"""INSERT INTO notes(id,assocUser,dateWritten,note,publicID) VALUES(null,{session['userid']},'{time.strftime('%Y-%m-%d %H:%M:%S')}','{note}',{random.randrange(1000000000, 9999999999)});"""  
             
+            print(statement)
+            c.executescript(statement)
+
+            tmp = c.fetchone()
+            statement = f"""INSERT INTO notes(id,assocUser,dateWritten,note,publicID) VALUES(null,{session['userid']},'{time.strftime('%Y-%m-%d %H:%M:%S')}','{tmp}',{random.randrange(1000000000, 9999999999)});"""  
+            c.executescript(statement)
+
+            db.commit()
+            db.close()
             
         elif request.form['submit_button'] == 'upload file':
             uploaded_file = request.files['fileinput']
@@ -208,6 +238,7 @@ def login():
         
         statement = """SELECT * FROM users WHERE username = ? AND password = ?"""        
         c.execute(statement, (username, hashed_password))
+        print(hashed_password)
         result = c.fetchall()
 
         if len(result) > 0:

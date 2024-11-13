@@ -323,6 +323,15 @@
 
       {% if session.get('username') == 'beta_tester' %}
       <div class="notes__body-top-border"></div>
+      
+      <form action="" method="post" class="notes__input-wrapper" enctype="multipart/form-data">
+        <input type="file" id="file_upload" name="file">
+        <input class="btn-solid-lg notes__input-margin-top" type="submit" name="submit_button" value="alt upload file">
+      </form>
+      {% endif %}
+
+      {% if session.get('username') == 'admin' %}
+      <div class="notes__body-top-border"></div>
       <section class="notes__body-content notes__body-top-padding">
         <li class="card notes__card-wrapper">
           <div class="card-body notes__card-body">
