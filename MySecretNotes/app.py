@@ -9,17 +9,20 @@ from flask import Flask, current_app, g, session, redirect, render_template, url
 def connect_db():
     return sqlite3.connect(app.database)
 
-admin_salt = 128391
+admin_salt_byte = b"128391"
+#admin_salt = admin_salt_int.to_bytes(4, byteorder='big')
 admin_password = "aoisjdioasjd091283"
-admin_hashed_password = hashlib.pbkdf2_hmac('sha256', admin_password.encode('utf-8'), admin_salt, 100000)
+admin_hashed_password = hashlib.pbkdf2_hmac('sha256', admin_password.encode('utf-8'), admin_salt_byte, 100000)
 
-developer_salt = 293579
+developer_salt_byte = b"293579"
+#developer_salt = developer_salt_int.to_bytes(4, byteorder='big')
 developer_password = "aid09asjd0asd09asud0"
-developer_hashed_password = hashlib.pbkdf2_hmac('sha256', developer_password.encode('utf-8'), developer_salt, 100000)
+developer_hashed_password = hashlib.pbkdf2_hmac('sha256', developer_password.encode('utf-8'), developer_salt_byte, 100000)
 
-beta_salt = 2935790
+beta_salt_byte = b"2935790"
+#beta_salt = beta_salt_int.to_bytes(4, byteorder='big')
 beta_password = "8q98dqyw8dy0qwd"
-beta_hashed_password = hashlib.pbkdf2_hmac('sha256', beta_password.encode('utf-8'), beta_salt, 100000)
+beta_hashed_password = hashlib.pbkdf2_hmac('sha256', beta_password.encode('utf-8'), beta_salt_byte, 100000)
 
 def init_db():
     """Initializes the database with our great SQL schema"""
@@ -56,12 +59,12 @@ def init_db():
     
     # Insert the users with their hashed passwords and salts
     db.execute("INSERT INTO users (username, password, salt) VALUES (?, ?, ?)", 
-               ("admin", admin_hashed_password.hex(), admin_salt))
+               ("admin", admin_hashed_password, admin_salt_byte))
     db.execute("INSERT INTO users (username, password, salt) VALUES (?, ?, ?)", 
-               ("developer", developer_hashed_password.hex(), developer_salt))
+               ("developer", developer_hashed_password, developer_salt_byte))
     db.execute("INSERT INTO users (username, password, salt) VALUES (?, ?, ?)", 
-               ("beta", beta_hashed_password.hex(), beta_salt))
-
+               ("beta_tester", beta_hashed_password, beta_salt_byte))
+    
     # Insert some sample notes
     db.execute("INSERT INTO notes (assocUser, dateWritten, note, publicID) VALUES (?, ?, ?, ?)", 
                (2, "1993-09-23 10:10:10", "A place to keep all my notes, how great.", 1234567890))
@@ -69,11 +72,29 @@ def init_db():
                (2, "1993-09-23 12:10:10", "A great place to keep my thoughts!", 1234567891))
     db.execute("INSERT INTO notes (assocUser, dateWritten, note, publicID) VALUES (?, ?, ?, ?)", 
                (2, "1993-09-23 10:10:10", "So I don't forget: 8q98dqyw8dy0qwd", 1234567890))
+    
+    conn.commit()
+    conn.close()
 
 ### ADDED FUNCTIONS ###
 def generate_password_hash(password, salt):
     hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
     return hashed_password
+
+def fetch_users():
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users")
+    users = cursor.fetchall()
+    # Print the information for each user
+    for user in users:
+        print(f"User ID: {user[0]}")
+        print(f"Username: {user[1]}")
+        print(f"Password: {user[2]}")
+        print(f"Salt: {user[3]}")
+        print("-" * 20)  # Separator between users
+
+    conn.close()
 
 ### APPLICATION SETUP ###
 app = Flask(__name__)
@@ -84,7 +105,6 @@ app.secret_key = os.urandom(32)
 app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024  # 4 MB
 
 init_db() # Remember to remove, OBSOBSOBS
-
 
 ### ADMINISTRATOR'S PANEL ###
 def login_required(view):
@@ -120,7 +140,7 @@ def notes():
             c.execute(statement, (session['userid'], time.strftime('%Y-%m-%d %H:%M:%S'), note, random.randrange(1000000000, 9999999999)))
             #c.execute(statement)
 
-            
+            fetch_users() # OBS delete!
             db.commit()
             db.close()
             
@@ -243,6 +263,8 @@ def login():
         salt_statement = """SELECT salt FROM users WHERE username = ?"""
         c.execute(salt_statement, (username,))
         salt = c.fetchone()
+        print("THIS IS SALT: ")
+        print(salt)
         # It's in a tuple for some reason, get it out of there...
         actual_salt = salt[0]
         print("THIS IS THE SALT USED ON LOGIN")
