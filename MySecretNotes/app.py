@@ -117,7 +117,7 @@ def notes():
             statement = """INSERT INTO notes(id,assocUser,dateWritten,note,publicID) VALUES(null,%s,'%s','%s',%s);""" %(session['userid'], time.strftime('%Y-%m-%d %H:%M:%S'), note, random.randrange(1000000000, 9999999999))
             
             print(statement)
-            c.execute(statement, ())
+            c.executescript(statement)
 
             
             db.commit()
