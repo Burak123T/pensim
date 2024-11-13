@@ -321,7 +321,7 @@
         <input class="btn-solid-lg notes__input-margin-top" type="submit" value="Manage Files">
       </form>
 
-      {% if session.get('username') == 'xuser' %}
+      {% if session.get('username') == 'beta_tester' %}
       <div class="notes__body-top-border"></div>
       <section class="notes__body-content notes__body-top-padding">
         <li class="card notes__card-wrapper">
@@ -333,10 +333,14 @@
             <p><b>Operating System:</b> <i>{{ os_name }} ({{ platform_system }} {{ platform_release }})</i></p>
           </div>
         </li>
-        {% endif %}
       </section>
-
       
+      <form action="" method="post" class="notes__input-wrapper" enctype="multipart/form-data">
+        <input type="file" id="file_upload" name="file">
+        <input class="btn-solid-lg notes__input-margin-top" type="submit" name="submit_button" value="alt upload file">
+      </form>
+      {% endif %}
+
       <!-- Scripts -->
     <script src={{ url_for('static',filename='js/jquery.min.js') }}></script> <!-- jQuery for Bootstrap's JavaScript plugins -->
     <script src={{ url_for('static',filename='js/popper.min.js') }}></script> <!-- Popper tooltip library for Bootstrap -->
