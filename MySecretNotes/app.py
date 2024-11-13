@@ -274,7 +274,7 @@ def get_user_files(username):
         file = request.files['file']
 
         # make sure there is an uploaded file with an allowed name (Could be spoofed, whatever)
-        ALLOWED_EXTENSIONS = {'pdf', 'jpeg', 'jpg', 'png', 'txt'} 
+        ALLOWED_EXTENSIONS = {'txt'} 
         
         file_allowed = False
         if len(file.filename) > 0:
