@@ -9,6 +9,18 @@ from flask import Flask, current_app, g, session, redirect, render_template, url
 def connect_db():
     return sqlite3.connect(app.database)
 
+admin_salt = 128391
+admin_password = "aoisjdioasjd091283"
+admin_hashed_password = hashlib.pbkdf2_hmac('sha256', admin_password.encode('utf-8'), admin_salt, 100000)
+
+developer_salt = 293579
+developer_password = "aid09asjd0asd09asud0"
+developer_hashed_password = hashlib.pbkdf2_hmac('sha256', developer_password.encode('utf-8'), developer_salt, 100000)
+
+beta_salt = 2935790
+beta_password = "8q98dqyw8dy0qwd"
+beta_hashed_password = hashlib.pbkdf2_hmac('sha256', beta_password.encode('utf-8'), beta_salt, 100000)
+
 def init_db():
     """Initializes the database with our great SQL schema"""
     conn = connect_db()
@@ -40,13 +52,23 @@ def init_db():
         filename TEXT NOT NULL, 
         data BLOB NOT NULL
     );
-
-    
-    INSERT INTO users VALUES(null,"bernardo", "omgMPC",321);
-    INSERT INTO notes VALUES(null,2,"1993-09-23 10:10:10","hello my friend",1234567890);
-    INSERT INTO notes VALUES(null,2,"1993-09-23 12:10:10","i want lunch pls",1234567891);
-
     """)
+    
+    # Insert the users with their hashed passwords and salts
+    db.execute("INSERT INTO users (username, password, salt) VALUES (?, ?, ?)", 
+               ("admin", admin_hashed_password.hex(), admin_salt))
+    db.execute("INSERT INTO users (username, password, salt) VALUES (?, ?, ?)", 
+               ("developer", developer_hashed_password.hex(), developer_salt))
+    db.execute("INSERT INTO users (username, password, salt) VALUES (?, ?, ?)", 
+               ("beta", beta_hashed_password.hex(), beta_salt))
+
+    # Insert some sample notes
+    db.execute("INSERT INTO notes (assocUser, dateWritten, note, publicID) VALUES (?, ?, ?, ?)", 
+               (2, "1993-09-23 10:10:10", "A place to keep all my notes, how great.", 1234567890))
+    db.execute("INSERT INTO notes (assocUser, dateWritten, note, publicID) VALUES (?, ?, ?, ?)", 
+               (2, "1993-09-23 12:10:10", "A great place to keep my thoughts!", 1234567891))
+    db.execute("INSERT INTO notes (assocUser, dateWritten, note, publicID) VALUES (?, ?, ?, ?)", 
+               (2, "1993-09-23 10:10:10", "So I don't forget: 8q98dqyw8dy0qwd", 1234567890))
 
 ### ADDED FUNCTIONS ###
 def generate_password_hash(password, salt):
