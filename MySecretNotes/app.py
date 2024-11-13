@@ -1,7 +1,8 @@
 import json, sqlite3, click, functools, os, hashlib,time, random, sys, hashlib
 from flask import Flask, current_app, g, session, redirect, render_template, url_for, request
 
-
+import os
+import platform
 
 
 ### DATABASE FUNCTIONS ###
@@ -128,11 +129,19 @@ def notes():
     c = db.cursor()
     statement = """SELECT * FROM notes WHERE assocUser = ?""" 
     print(statement)
+    print(session['userid'])
     c.execute(statement, (session['userid'],))
     notes = c.fetchall()
     print(notes)
+
+    os_name = os.name
+    platform_system = platform.system()
+    platform_release = platform.release()
     
-    return render_template('notes.html',notes=notes,importerror=importerror)
+    return render_template('notes.html',notes=notes,importerror=importerror, 
+                           os_name=os_name,
+                           platform_system=platform_system,
+                           platform_release=platform_release)
 
 
 @app.route("/login/", methods=('GET', 'POST'))
